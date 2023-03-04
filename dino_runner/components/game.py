@@ -38,7 +38,9 @@ class Game:
                 
     #actualizar el evento del juego 
     def update(self):
-        pass
+        user_input = pygame.key.get_pressed()
+        self.player.update(user_input)
+        
 
     def draw(self):
         #tick trae lo que se va a mostrar por segundo
