@@ -5,5 +5,3 @@ if __name__ == "__main__":
     game.run()
     print("hello there...")
     print("Test for commit")
-    
-    
