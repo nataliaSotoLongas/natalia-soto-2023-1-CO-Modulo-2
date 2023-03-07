@@ -1,7 +1,7 @@
 import pygame 
 from dino_runner.components.dinosaurio import Dinosaurio
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
-
+from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 
 class Game:
     def __init__(self):
@@ -19,6 +19,7 @@ class Game:
         self.x_pos_bg = 0
         self.y_pos_bg = 380
         self.player = Dinosaurio()
+        self.obstacle_manager = ObstacleManager()
 
     #metodo que hacer correr cada metodo del programa
     def run(self):
@@ -40,6 +41,7 @@ class Game:
     def update(self):
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
+        self.obstacle_manager.update(self)
         
 
     def draw(self):
@@ -51,6 +53,7 @@ class Game:
         self.draw_background()
         #update y flip es para actualizar el display
         self.player.draw(self.screen)
+        self.obstacle_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
         
