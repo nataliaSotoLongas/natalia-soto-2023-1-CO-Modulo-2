@@ -8,8 +8,18 @@ class Menu:
     screen.fill((255, 255, 255))
     self.font = pygame.font.Font(FONT_STYLE, 30)
     self.text = self.font.render(message, True, (0, 0, 0))
+    
     self.text_rect = self.text.get_rect()
     self.text_rect.center = (self.half_screen_width, self.half_screen_height)
+    
+    self.text_score = self.font.render(message, True, (0, 0, 0))
+    self.text_rect_score = self.text_score.get_rect()
+    
+    self.text_max_deaths = self.font.render(message, True, (0, 0, 0))
+    self.text_rect_max_deaths = self.text_max_deaths.get_rect()
+    
+    self.text_deaths = self.font.render(message, True, (0, 0, 0))
+    self.text_rect_deaths = self.text_deaths.get_rect()
     
   
   def update(self,game):
@@ -18,6 +28,9 @@ class Menu:
   
   def draw(self, screen):
     screen.blit(self.text, self.text_rect)
+    screen.blit(self.text_score , self.text_rect_score )
+    screen.blit(self.text_max_deaths , self.text_rect_max_deaths )
+    screen.blit(self.text_deaths, self.text_rect_deaths)
     
   def reset_screen_color(self, screen):
     screen.fill((255, 255, 255,))
@@ -34,3 +47,18 @@ class Menu:
     self.text = self.font.render(message, True,(0,0,0))
     self.text_rect = self.text.get_rect()
     self.text_rect.center=(self.half_screen_width , self.half_screen_height)
+    
+  def update_score(self, message):
+    self.text_score = self.font.render(message, True,(0,0,0))
+    self.text_rect_score = self.text_score.get_rect()
+    self.text_rect_score.center=(self.half_screen_width -20, self.half_screen_height +40)
+  
+  def update_max_deaths(self, message):
+    self.text_max_deaths = self.font.render(message, True,(0,0,0))
+    self.text_rect_max_deaths = self.text_max_deaths.get_rect()
+    self.text_rect_max_deaths.center=(self.half_screen_width -20, self.half_screen_height +80)
+    
+  def update_deaths(self, message):
+    self.text_deaths = self.font.render(message, True,(0,0,0))
+    self.text_rect_deaths = self.text_deaths.get_rect()
+    self.text_rect_deaths.center=(self.half_screen_width -20, self.half_screen_height +120)

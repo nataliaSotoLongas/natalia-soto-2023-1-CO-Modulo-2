@@ -1,6 +1,5 @@
 import pygame
-
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS , FONT_STYLE
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS , FONT_STYLE, GAMEOVER,RESET ,CLOUD
 from dino_runner.components.dinosaurio import Dinosauro
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.menu import Menu
@@ -12,6 +11,9 @@ class Game:
         pygame.init()
         pygame.display.set_caption(TITLE)
         pygame.display.set_icon(ICON)
+        pygame.display.set_icon(GAMEOVER)
+        pygame.display.set_icon(RESET)
+        pygame.display.set_icon(CLOUD)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.playing = False
@@ -20,9 +22,11 @@ class Game:
         self.y_pos_bg = 380
         self.player = Dinosauro()
         self.obstacle_manager = ObstacleManager()
-        self.menu = Menu('Press any key to start ....', self.screen)
+        self.menu = Menu('',self.screen)
         self.running = False
         self.score = 0
+        self.max_death = []
+        self.cloud = 0
         self.death_count = 0
         
     def execute(self):
@@ -50,6 +54,9 @@ class Game:
                 self.playing = False
 
     def update(self):
+        self.max_death.append(self.score)
+        if self.score > self.score:
+            self.max_death = self.score
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
@@ -59,13 +66,22 @@ class Game:
         self.clock.tick(FPS)
         self.screen.fill((255, 255, 255))
         self.draw_background()
+        self.draw_clouds()
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.draw_score()
         
         pygame.display.update()
         #pygame.display.flip()
-
+    def draw_clouds(self):
+        image_width = CLOUD.get_width()
+        self.screen.blit(CLOUD, (image_width + self.x_pos_bg +1020, self.y_pos_bg -250))
+        self.screen.blit(CLOUD, (image_width + self.x_pos_bg +1070, self.y_pos_bg -250))
+        self.screen.blit(CLOUD, (image_width + self.x_pos_bg +2030, self.y_pos_bg -300))
+        
+            
+        
+        
     def draw_background(self):
         image_width = BG.get_width()
         self.screen.blit(BG, (self.x_pos_bg, self.y_pos_bg))
@@ -80,11 +96,15 @@ class Game:
         half_screen_width = SCREEN_WIDTH // 2
         half_screen_height = SCREEN_HEIGHT // 2
         if self.death_count == 0:
+            self.screen.blit(GAMEOVER,(half_screen_width -200, half_screen_height - 50))
             self.menu.draw(self.screen)
         else:
-            self.menu.update_message('new message')
+            self.screen.blit(RESET,(half_screen_width -50, half_screen_height - 100))
+            self.menu.update_message('GAME OVER. PRESS ANY KEY TO RESTART')
+            self.menu.update_score(f'Your Score: {self.score-1}')
+            self.menu.update_max_deaths(f'Highest Score: {max(self.max_death)}')
+            self.menu.update_deaths(f'Total Deaths: {self.death_count}')
             self.menu.draw(self.screen)
-        self.screen.blit(ICON,(half_screen_width - 50, half_screen_height - 140))
         self.menu.update(self)
 
     def update_score(self):
