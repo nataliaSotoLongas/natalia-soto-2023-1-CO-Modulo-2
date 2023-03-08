@@ -1,41 +1,45 @@
 import pygame
+import random
+
 from dino_runner.components.obstacles.cactus import Cactus
-from dino_runner.components.obstacles.birds import Birds
-from dino_runner.utils.constants import SMALL_CACTUS , LARGE_CACTUS , BIRD
+from dino_runner.components.obstacles.birds import Bird
+
+from dino_runner.utils.constants import SMALL_CACTUS
+
 
 class ObstacleManager:
-    def __init__(self):
-        self.obstacles = []
-        self.condicion = 0
-    def update(self, game):
-        #si no hay obstaculos vamos a crear uno nuevo
-        
-        if len(self.obstacles) == 0:
-            if self.condicion == 0:
-                cactus = Cactus(SMALL_CACTUS)
-                self.obstacles.append(cactus)
-                self.condicion += 1
-            
-            elif self.condicion == 1:
-                birds = Birds(BIRD)
-                self.obstacles.append(birds)
-                self.condicion += 1
-                
-            elif self.condicion == 2:
-                cactus= Cactus(LARGE_CACTUS)
-                self.obstacles.append(cactus)
-                self.condicion = 0
-           
-        for obstacles in self.obstacles: 
-            obstacles.update(game.game_speed ,self.obstacles)
-            if game.player.dino_rect.colliderect(obstacles.rect):
-                pygame.time.delay(1000)
-                game.playing = False
-                break
-
-           
-                      
-    def draw(self,screen):
-        for obstacle in self.obstacles:
-           obstacle.draw(screen)
-       
+  def __init__(self):
+    self.obstacles = []
+    
+  def generate_obstacle(self, obstacle_type):
+    if obstacle_type == 0:
+      cactus_type = 'SMALL'
+      obstacle = Cactus(cactus_type)
+    elif obstacle_type == 1:
+      cactus_type = 'LARGE'
+      obstacle = Cactus(cactus_type)
+    else:
+      obstacle = Bird()
+    return obstacle
+    
+  def update(self, game):
+    if len(self.obstacles) == 0:
+      obstacle_type = random.randint(0, 2)
+      obstacle = self.generate_obstacle(obstacle_type)
+      self.obstacles.append(obstacle)
+      
+    for obstacle in self.obstacles:
+      obstacle.update(game.game_speed, self.obstacles)
+      
+      if game.player.dino_rect.colliderect(obstacle.rect):
+        pygame.time.delay(1000)
+        game.death_count += 1
+        game.playing = False
+        break
+  
+  def draw(self, screen):
+    for obstacle in self.obstacles:
+      obstacle.draw(screen)
+  
+  def reset_obstacle(self):
+    self.obstacles = []
