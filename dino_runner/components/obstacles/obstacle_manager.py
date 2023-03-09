@@ -3,8 +3,7 @@ import random
 
 from dino_runner.components.obstacles.cactus import Cactus
 from dino_runner.components.obstacles.birds import Bird
-
-from dino_runner.utils.constants import SMALL_CACTUS
+from dino_runner.utils.constants import  SHIELD_TYPE
 
 
 class ObstacleManager:
@@ -32,14 +31,18 @@ class ObstacleManager:
       obstacle.update(game.game_speed, self.obstacles)
       
       if game.player.dino_rect.colliderect(obstacle.rect):
-        pygame.time.delay(1000)
-        game.death_count += 1
-        game.playing = False
-        break
+        if game.player.type != SHIELD_TYPE: # si el pido de jugador no es chit va a morir
+          game.player.dead() # llamanos la imagen del dinosaurio 
+          pygame.time.delay(100) # para mostrar la rapidez de muerte
+          game.death_count.update()
+          game.playing = False
+          break
+        else:
+          self.obstacles.remove(obstacle) #para quitar el obstaculo
   
   def draw(self, screen):
     for obstacle in self.obstacles:
       obstacle.draw(screen)
-  
-  def reset_obstacle(self):
+      
+  def reset_obstacles(self):
     self.obstacles = []
