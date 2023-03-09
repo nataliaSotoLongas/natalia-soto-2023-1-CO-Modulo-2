@@ -1,6 +1,6 @@
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, FONT_STYLE , RESET , GAMEOVER ,CLOUD, DEFAULT_TYPE
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, FONT_STYLE , RESET , GAMEOVER ,CLOUD, DEFAULT_TYPE, ICON_1
 from dino_runner.components.dinosaurio import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.menu import Menu
@@ -13,10 +13,10 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption(TITLE)
-        pygame.display.set_icon(ICON)
         pygame.display.set_icon(CLOUD)
         pygame.display.set_icon(RESET)
         pygame.display.set_icon(GAMEOVER)
+        self.icon = ICON_1[0]
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.playing = False
@@ -33,6 +33,7 @@ class Game:
         self.power_up_manager = PowerUpManager()
         self.stop = 0
         self.colors = 0
+        self.step = 0
         
     def execute(self):
         self.running = True
@@ -112,6 +113,13 @@ class Game:
             self.x_pos_bg = 0
         self.x_pos_bg -= self.game_speed
         
+        
+    def Icon_walk(self):
+        if self.step >= 800:
+            self.step = 0
+        self.icon = ICON_1[0] if self.step < 400 else ICON_1[1]
+        self.step += 1
+        
     #metodo para mostar el menu
     def show_menu(self):
         self.menu.reset_screen_color(self.screen)
@@ -119,13 +127,14 @@ class Game:
         half_screen_width = SCREEN_WIDTH // 2
         
         if self.death_count.count == 0:
-            self.screen.blit(ICON, (half_screen_width - 50, half_screen_height - 140))
-            self.menu.draw(self.screen, 'Press any key to start ...')
+            self.Icon_walk()
+            self.screen.blit(self.icon,(half_screen_width -90, half_screen_height-200))
+            self.menu.draw(self.screen, 'Press any key to start ...', half_screen_width +180)
         else:
             self.screen.blit(GAMEOVER, (half_screen_width -380, half_screen_height - 140,))
             self.screen.blit(RESET, (half_screen_width - 50, half_screen_height - 70,))
             self.update_highest_score()
-            self.menu.draw(self.screen, 'Game over. Press any key to restart', half_screen_width, 350, )
+            self.menu.draw(self.screen, 'Game over. Press any key to restart',half_screen_width -30, half_screen_height +50, )
             self.menu.draw(self.screen, f'Your score: {self.score.count}', half_screen_width, 370, )
             self.menu.draw(self.screen, f'Highest score: {self.highest_score.count}', half_screen_width, 390, )
             self.menu.draw(self.screen, f'Total deaths: {self.death_count.count}', half_screen_width, 410, )    
@@ -165,7 +174,7 @@ class Game:
     def  draw_power_up_time(self):
         if self.player.has_power_up: #el poder debe estar activado
             self.stop += 1
-            if self.stop <= 50: #si le queda tiempo se manda un nuevo mensaje
+            if self.stop <= 80: #si le queda tiempo se manda un nuevo mensaje
                 self.menu.draw(self.screen, f'{self.player.type.capitalize()} enabled for {self.stop} seconds',500,50 )
             else:
                 self.has_power_up = False
